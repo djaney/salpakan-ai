@@ -3,6 +3,7 @@ import numpy as np
 import gym
 import random
 import os
+import math
 from keras.layers import Input, Conv2D, LeakyReLU, Flatten, Dense, concatenate
 from keras.models import Model
 from keras.utils import to_categorical
@@ -117,7 +118,33 @@ def remember(ob, action, next_ob, reward):
 
 def crop_input(inp):
     # TODO crop to see only the surrounding of the piece and  the piece as the center. x and y will also be adjusted
-    return inp
+    # TODO need unit test for this
+    x = 1
+    y = 1
+    width = 9
+    height = 8
+    shift_x = math.floor(width / 2) - x
+    shift_y = math.floor(height / 2) - y
+
+    ob = inp[0]
+    zero_pad = (0, 0)
+
+    shifted = np.copy(ob)
+
+    # move right
+    if shift_x > 0:
+        shifted = np.pad(shifted, (zero_pad, (shift_x, 0), zero_pad, zero_pad), mode='constant')[:, :-shift_x, :, :]
+    # move left
+    if shift_x < 0:
+        shifted = np.pad(shifted, (zero_pad, (0, -shift_x), zero_pad, zero_pad), mode='constant')[:, -shift_x:, :, :]
+    # move down
+    if shift_y > 0:
+        shifted = np.pad(shifted, (zero_pad, zero_pad, (shift_y, 0), zero_pad), mode='constant')[:, :, :-shift_y, :]
+    # move up
+    if shift_y < 0:
+        shifted = np.pad(shifted, (zero_pad, zero_pad, (0, -shift_y), zero_pad), mode='constant')[:, :, -shift_y:, :]
+
+    return shifted
 
 
 def train():
