@@ -78,6 +78,7 @@ def evaluate(ob, possible_moves):
         y2 = np.expand_dims(y2, 0)
 
         inp = [ob, x1, y1, x2, y2]
+        inp = crop_input(inp)
         prediction = model.predict(inp)[0][0]
         q_values.append(prediction)
     index = np.argmax(q_values)
@@ -104,6 +105,7 @@ def get_next_max_q(ob):
         y2 = np.expand_dims(y2, 0)
 
         inp = [ob, x1, y1, x2, y2]
+        inp = crop_input(inp)
         prediction = model.predict(inp)[0][0]
         q_values.append(prediction)
     return np.max(q_values)
@@ -113,8 +115,12 @@ def remember(ob, action, next_ob, reward):
     memory.append((ob, action, next_ob, reward))
 
 
-def train():
+def crop_input(inp):
+    # TODO crop to see only the surrounding of the piece and  the piece as the center. x and y will also be adjusted
+    return inp
 
+
+def train():
     if SAMPLE_SIZE > len(memory):
         return
 
@@ -140,7 +146,7 @@ def train():
         y2 = np.expand_dims(y2, 0)
 
         inp = [ob, x1, y1, x2, y2]
-
+        inp = crop_input(inp)
         model.fit(inp, [q_value], verbose=0)
         q_history.append(q_value)
 
