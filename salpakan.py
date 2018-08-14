@@ -45,9 +45,7 @@ model = create_model()
 if os.path.isfile(WEIGHTS_PATH) and os.access(WEIGHTS_PATH, os.R_OK):
     model.load_weights(WEIGHTS_PATH)
 
-
 memory = deque(maxlen=MEMORY)
-
 
 
 def get_action(ob, training=True):
@@ -85,7 +83,8 @@ def evaluate(ob, possible_moves):
     index = np.argmax(q_values)
     return possible_moves[index]
 
-def get_next_q(ob):
+
+def get_next_max_q(ob):
     possible_moves = env.possible_moves()
     q_values = []
 
@@ -109,17 +108,19 @@ def get_next_q(ob):
         q_values.append(prediction)
     return np.max(q_values)
 
+
 def remember(ob, action, next_ob, reward):
     memory.append((ob, action, next_ob, reward))
 
 
 def train():
     sample_moves = random.sample(memory, SAMPLE_SIZE)
-
+    q_history = []
     for move in sample_moves:
         ob, a, next_ob, reward = move
-        next_q = get_next_q(next_ob)
-        q_value = reward + GAMMA * next_q
+        # next q is enemy's best move minus your reward
+        next_q = get_next_max_q(next_ob)
+        q_value = reward + GAMMA * -next_q
 
         x1, y1, x2, y2 = a
 
@@ -136,7 +137,11 @@ def train():
 
         inp = [ob, x1, y1, x2, y2]
 
-        model.fit(inp, [q_value], verbose=2)
+        model.fit(inp, [q_value], verbose=0)
+        q_history.append(q_value)
+
+    print('Q: ', q_history)
+
 
 # train
 env = gym.make(ENV_NAME)
@@ -147,10 +152,12 @@ while True:
     ob, reward, done, info = env.step(a)
     while True:
         possible_moves = env.possible_moves()
-        a = get_action(ob)
+        turn = env.get_turn()
+        a = get_action(ob, training=turn == 0)
         next_ob, next_reward, done, info = env.step(a)
 
-        remember(ob, a, next_ob, reward)
+        if turn == 0:
+            remember(ob, a, next_ob, reward)
 
         ob = next_ob
         reward = next_reward
