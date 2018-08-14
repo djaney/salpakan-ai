@@ -51,10 +51,12 @@ memory = deque(maxlen=MEMORY)
 def get_action(ob, training=True):
     possible_moves = env.possible_moves()
 
-    if training and random.uniform(0, 1) > 0.1:
-        action = evaluate(ob, possible_moves)
-    else:
+    if training and random.uniform(0, 1) < 0.1:
         action = random.choice(possible_moves)
+        print('rand')
+    else:
+        action = evaluate(ob, possible_moves)
+        print('true')
 
     return action
 
