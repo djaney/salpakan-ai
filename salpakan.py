@@ -53,10 +53,8 @@ def get_action(ob, training=True):
 
     if training and random.uniform(0, 1) < 0.1:
         action = random.choice(possible_moves)
-        print('rand')
     else:
         action = evaluate(ob, possible_moves)
-        print('true')
 
     return action
 
