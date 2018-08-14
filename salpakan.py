@@ -114,6 +114,10 @@ def remember(ob, action, next_ob, reward):
 
 
 def train():
+
+    if SAMPLE_SIZE > len(memory):
+        return
+
     sample_moves = random.sample(memory, SAMPLE_SIZE)
     q_history = []
     for move in sample_moves:
