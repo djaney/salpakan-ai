@@ -123,13 +123,17 @@ class SalpakanGame:
                     win = 1
                 elif me == TROOP_PRIVATE and him == -TROOP_SPY:  # private captures spy
                     win = 1
-                    if me == TROOP_FIVE_STAR:
-                        self.board[x][y][CHANNEL_SPY_PERCEPTION] = 1
                 else:  # normal rank based clash
                     win = 1 if me > -him else -1
+                    # if lost
                     if win < 0:
-                        self.board[x][y][CHANNEL_SPY_PERCEPTION] = max(self.board[x][y][CHANNEL_SPY_PERCEPTION],
-                                                                       me / 16)
+                        # and i was 5 star
+                        if me == TROOP_FIVE_STAR:
+                            # surely a spy
+                            self.board[x][y][CHANNEL_SPY_PERCEPTION] = 1
+                        else:
+                            self.board[_x][_y][CHANNEL_SPY_PERCEPTION] = max(self.board[_x][_y][CHANNEL_SPY_PERCEPTION],
+                                                                         me / 15)
 
                 if win > 0:  # win
                     self.board[_x][_y] = self.board[x][y]
@@ -322,7 +326,7 @@ class Renderer:
                 canvas.create_text(x1 + (x2 - x1) / 2, y1 + (y2 - y1) / 2,
                                    fill='red',
                                    font=self.font,
-                                   text='{:.0f}'.format(cell[CHANNEL_SPY_PERCEPTION]))
+                                   text='{:.1f}'.format(cell[CHANNEL_SPY_PERCEPTION]))
 
     def _draw_info_board(self, canvas, game):
 
