@@ -19,23 +19,19 @@ SAMPLE_SIZE = 32
 
 def create_model():
     state_input = Input(shape=(9, 8, 3))
-    x_action_input = Input(shape=(9,))
-    y_action_input = Input(shape=(8,))
-    x2_action_input = Input(shape=(9,))
-    y2_action_input = Input(shape=(8,))
+    action_input = Input(shape=(4,))
 
     conv_1 = Conv2D(64, 3, padding='same')(state_input)
     conv1_a = LeakyReLU()(conv_1)
     flat_layer = Flatten()(conv1_a)
     dense_1 = Dense(512)(flat_layer)
     state_output = LeakyReLU()(dense_1)
-    merged_layer = concatenate([state_output, x_action_input, y_action_input, x2_action_input, y2_action_input])
+    merged_layer = concatenate([state_output, action_input])
     dense_2 = Dense(512)(merged_layer)
     dense_2_a = LeakyReLU()(dense_2)
     output = Dense(1)(dense_2_a)
 
-    model = Model([state_input, x_action_input, y_action_input, x2_action_input, y2_action_input],
-                  output)
+    model = Model([state_input, action_input], output)
     model.compile('adam', loss='mse')
     model.summary()
     return model
@@ -50,22 +46,22 @@ memory = deque(maxlen=MEMORY)
 
 
 def get_action(ob, training=True):
-    possible_moves = env.possible_moves()
+    moves = env.possible_moves()
 
     if training and random.uniform(0, 1) < 0.1:
-        action = random.choice(possible_moves)
+        action = random.choice(moves)
     else:
-        action = evaluate(ob, possible_moves)
+        action = evaluate(ob, moves)
 
     return action
 
 
-def evaluate(ob, possible_moves):
+def evaluate(observations, moves):
     q_values = []
 
-    ob = np.expand_dims(ob, 0)
+    observations = np.expand_dims(observations, 0)
 
-    for move in possible_moves:
+    for move in moves:
         x1, y1, x2, y2 = move
 
         x1 = to_categorical(x1, num_classes=9)
@@ -78,21 +74,21 @@ def evaluate(ob, possible_moves):
         x2 = np.expand_dims(x2, 0)
         y2 = np.expand_dims(y2, 0)
 
-        inp = [ob, x1, y1, x2, y2]
+        inp = [observations, x1, y1, x2, y2]
         inp = crop_input(inp)
         prediction = model.predict(inp)[0][0]
         q_values.append(prediction)
     index = np.argmax(q_values)
-    return possible_moves[index]
+    return moves[index]
 
 
-def get_next_max_q(ob):
-    possible_moves = env.possible_moves()
+def get_next_max_q(observations):
+    moves = env.possible_moves()
     q_values = []
 
-    ob = np.expand_dims(ob, 0)
+    observations = np.expand_dims(observations, 0)
 
-    for move in possible_moves:
+    for move in moves:
         x1, y1, x2, y2 = move
 
         x1 = to_categorical(x1, num_classes=9)
@@ -105,7 +101,7 @@ def get_next_max_q(ob):
         x2 = np.expand_dims(x2, 0)
         y2 = np.expand_dims(y2, 0)
 
-        inp = [ob, x1, y1, x2, y2]
+        inp = [observations, x1, y1, x2, y2]
         inp = crop_input(inp)
         prediction = model.predict(inp)[0][0]
         q_values.append(prediction)
@@ -117,19 +113,19 @@ def remember(ob, action, next_ob, reward):
 
 
 def crop_input(inp):
-    # TODO crop to see only the surrounding of the piece and  the piece as the center. x and y will also be adjusted
-    # TODO need unit test for this
-    x = 1
-    y = 1
+    board_state = inp[0]
+    x = np.argmax(inp[1])
+    y = np.argmax(inp[2])
+    _x = np.argmax(inp[3])
+    _y = np.argmax(inp[4])
     width = 9
     height = 8
     shift_x = math.floor(width / 2) - x
     shift_y = math.floor(height / 2) - y
 
-    ob = inp[0]
     zero_pad = (0, 0)
 
-    shifted = np.copy(ob)
+    shifted = np.copy(board_state)
 
     # move right
     if shift_x > 0:
@@ -144,7 +140,24 @@ def crop_input(inp):
     if shift_y < 0:
         shifted = np.pad(shifted, (zero_pad, zero_pad, (0, -shift_y), zero_pad), mode='constant')[:, :, -shift_y:, :]
 
-    return shifted
+    delta_x = _x - x
+    delta_y = _y - y
+
+    direction = None
+    if delta_x < 0 and delta_y == 0:
+        direction = 0
+    elif delta_x > 0 and delta_y == 0:
+        direction = 1
+    elif delta_y < 0 and delta_x == 0:
+        direction = 2
+    elif delta_y > 0 and delta_x == 0:
+        direction = 3
+
+    direction = np.expand_dims(to_categorical(direction, num_classes=4), 0)
+
+    new_inp = [shifted, direction]
+
+    return new_inp
 
 
 def train():
