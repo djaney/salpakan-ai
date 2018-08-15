@@ -10,6 +10,14 @@ MAX_STEPS = 200
 def _spy_only(item):
     return 1 if item == TROOP_SPY else 0
 
+
+def _troop_normalize_state(troop, class_num):
+    if troop == 0:
+        return 0
+    else:
+        return (troop/class_num) * 0.5 + 0.5
+
+
 class SalpakanEnv(Env):
 
     def __init__(self):
@@ -72,10 +80,12 @@ class SalpakanEnv(Env):
         my_troops = np.clip(board[:, :, 0], 0, None)
         enemy_troops = np.clip(board[:, :, 0] * -1, 0, None)
 
+        v_troop_adjust = np.vectorize(_troop_normalize_state)
+
         # enemy perception, flip and clip, troops channel
-        observation[:, :, 0] = (np.clip(enemy_troops, 0, 1) * board[:, :, 1]) / 16
+        observation[:, :, 0] = v_troop_adjust(np.clip(enemy_troops, 0, 1) * board[:, :, 1], 16)
         # my units, clip troops channel
-        observation[:, :, 1] = my_troops / 16
+        observation[:, :, 1] = v_troop_adjust(my_troops, 16)
         # my spy
         v_spy_func = np.vectorize(_spy_only)
         observation[:, :, 2] = v_spy_func(my_troops)
