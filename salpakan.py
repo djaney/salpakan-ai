@@ -112,6 +112,10 @@ def get_next_max_q(observations):
         inp = crop_input(inp)
         prediction = model.predict(inp)[0][0]
         q_values.append(prediction)
+
+    if len(q_values) == 0:
+        return 0
+
     return np.max(q_values)
 
 
