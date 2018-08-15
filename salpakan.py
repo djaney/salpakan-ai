@@ -15,7 +15,7 @@ WEIGHTS_PATH = '.models/dqn_{}_weights.h5f'.format(ENV_NAME)
 MEMORY = 1000
 GAMMA = 0.95
 SAMPLE_SIZE = 32
-
+EXPLORE_RATE = 0.3
 
 def create_model():
     state_input = Input(shape=(9, 8, 3))
@@ -50,7 +50,7 @@ memory = deque(maxlen=MEMORY)
 def get_action(ob, training=True):
     moves = env.possible_moves()
 
-    if training and random.uniform(0, 1) < 0.1:
+    if training and random.uniform(0, 1) < EXPLORE_RATE:
         action = random.choice(moves)
     else:
         action = evaluate(ob, moves)
