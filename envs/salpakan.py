@@ -73,7 +73,7 @@ class SalpakanEnv(Env):
         observation[:, :, 0] = (np.clip(enemy_troops, 0, 1) * board[:, :, 1]) / 16
         # my units, clip troops channel
         observation[:, :, 1] = my_troops / 16
-        # my spies
+        # spy perception
         observation[:, :, 2] = np.clip(my_troops, 0, 1) * board[:, :, 2]
 
         return observation

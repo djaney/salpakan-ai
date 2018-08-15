@@ -17,6 +17,7 @@ GAMMA = 0.95
 SAMPLE_SIZE = 32
 EXPLORE_RATE = 0.3
 
+
 def create_model():
     state_input = Input(shape=(9, 8, 3))
     action_input = Input(shape=(4,))
@@ -80,6 +81,10 @@ def evaluate(observations, moves):
         inp = crop_input(inp)
         prediction = model.predict(inp)[0][0]
         q_values.append(prediction)
+
+    if len(q_values) == 0:
+        return None
+
     index = np.argmax(q_values)
     return moves[index]
 
@@ -206,6 +211,10 @@ while True:
         possible_moves = env.possible_moves()
         turn = env.get_turn()
         a = get_action(ob, training=turn == 0)
+
+        if a is None:
+            break  # no more action
+
         next_ob, next_reward, done, info = env.step(a)
 
         if turn == 0:

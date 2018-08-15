@@ -119,8 +119,6 @@ class SalpakanGame:
 
                 if me == him:  # cancel out
                     win = 0
-                    if me == TROOP_SPY:
-                        self.board[x][y][CHANNEL_SPY_PERCEPTION] = 1
                 elif me == TROOP_SPY and him != -TROOP_PRIVATE:  # spy captures
                     win = 1
                 elif me == TROOP_PRIVATE and him == -TROOP_SPY:  # private captures spy
@@ -129,6 +127,9 @@ class SalpakanGame:
                         self.board[x][y][CHANNEL_SPY_PERCEPTION] = 1
                 else:  # normal rank based clash
                     win = 1 if me > -him else -1
+                    if win < 0:
+                        self.board[x][y][CHANNEL_SPY_PERCEPTION] = max(self.board[x][y][CHANNEL_SPY_PERCEPTION],
+                                                                       me / 16)
 
                 if win > 0:  # win
                     self.board[_x][_y] = self.board[x][y]
