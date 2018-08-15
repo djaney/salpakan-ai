@@ -231,12 +231,14 @@ class Renderer:
         self.canvas = self._create_canvas(self.view, (0, 0))
         self.canvas2 = self._create_canvas(self.view, (0, 1))
         self.canvas3 = self._create_canvas(self.view, (1, 0))
+        self.canvas4 = self._create_canvas(self.view, (1, 1))
 
     def render(self, game):
 
         self._clear(self.canvas)
         self._clear(self.canvas2)
         self._clear(self.canvas3)
+        self._clear(self.canvas4)
 
         self._draw_board(self.canvas)
         self._draw_pieces(self.canvas, game.board)
@@ -246,6 +248,8 @@ class Renderer:
 
         self._draw_board(self.canvas3)
         self._draw_spy_perception(self.canvas3, game.board)
+
+        self._draw_info_board(self.canvas4, game)
 
         self.view.update_idletasks()
 
@@ -318,3 +322,17 @@ class Renderer:
                                    fill='red',
                                    font=self.font,
                                    text='{:.0f}'.format(cell[CHANNEL_SPY_PERCEPTION]))
+
+    def _draw_info_board(self, canvas, game):
+
+        if game.winner == 0:
+            winner_text = "Win!"
+        elif game.winner == 1:
+            winner_text = "Lose!"
+        else:
+            winner_text = "Playing..."
+
+        canvas.create_text(self.width / 2, self.height / 2,
+                           fill='red',
+                           font=self.font,
+                           text=winner_text)
