@@ -52,7 +52,7 @@ class SalpakanEnv(Env):
         return self._get_state()
 
     def render(self, mode='human'):
-        self.renderer.render(self.game)
+        self.renderer.render(self.game, self._get_state())
 
     def close(self):
         super().close()
@@ -73,8 +73,8 @@ class SalpakanEnv(Env):
         observation[:, :, 0] = (np.clip(enemy_troops, 0, 1) * board[:, :, 1]) / 16
         # my units, clip troops channel
         observation[:, :, 1] = my_troops / 16
-        # spy perception
-        observation[:, :, 2] = np.clip(enemy_troops, 0, 1) * board[:, :, 2]
+        # my spy
+        observation[:, :, 2] = np.clip(my_troops - 1, 0, 1)
 
         return observation
 
@@ -82,10 +82,10 @@ class SalpakanEnv(Env):
         valid_moves = []
         for y in range(8):
             for x in range(9):
-                self._add_move_if_valid(valid_moves, x, y, x-1, y)
-                self._add_move_if_valid(valid_moves, x, y, x+1, y)
-                self._add_move_if_valid(valid_moves, x, y, x, y-1)
-                self._add_move_if_valid(valid_moves, x, y, x, y+1)
+                self._add_move_if_valid(valid_moves, x, y, x - 1, y)
+                self._add_move_if_valid(valid_moves, x, y, x + 1, y)
+                self._add_move_if_valid(valid_moves, x, y, x, y - 1)
+                self._add_move_if_valid(valid_moves, x, y, x, y + 1)
         return valid_moves
 
     def get_turn(self):

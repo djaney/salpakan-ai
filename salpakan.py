@@ -201,7 +201,7 @@ def train():
         model.fit(inp, [q_value], verbose=0)
         q_history.append(q_value)
 
-    print('Max: {} Min: {} Mean: {}'.format(np.max(q_history), np.min(q_history), np.mean(q_history)))
+    print('Max: {} Min: {} Mean: {}, Win: {}'.format(np.max(q_history), np.min(q_history), np.mean(q_history), env.game.winner))
 
 
 # train

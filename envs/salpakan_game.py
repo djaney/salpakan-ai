@@ -238,23 +238,25 @@ class Renderer:
         self.canvas3 = self._create_canvas(self.view, (1, 0))
         self.canvas4 = self._create_canvas(self.view, (1, 1))
 
-    def render(self, game):
+    def render(self, game, state):
 
         self._clear(self.canvas)
-        self._clear(self.canvas2)
-        self._clear(self.canvas3)
-        self._clear(self.canvas4)
-
         self._draw_board(self.canvas)
         self._draw_pieces(self.canvas, game.board)
 
-        self._draw_board(self.canvas2)
-        self._draw_perception(self.canvas2, game.board)
+        if game.turn == 0:
+            self._clear(self.canvas2)
+            self._clear(self.canvas3)
+            self._clear(self.canvas4)
 
-        self._draw_board(self.canvas3)
-        self._draw_spy_perception(self.canvas3, game.board)
+            self._draw_board(self.canvas2)
+            self._draw_channel(self.canvas2, state[:, :, 0])
 
-        self._draw_info_board(self.canvas4, game)
+            self._draw_board(self.canvas3)
+            self._draw_channel(self.canvas3, state[:, :, 1])
+
+            self._draw_board(self.canvas4)
+            self._draw_channel(self.canvas4, state[:, :, 2])
 
         self.view.update_idletasks()
 
@@ -292,7 +294,7 @@ class Renderer:
                                        font=self.font,
                                        text=str(int(cell[0])))
 
-    def _draw_perception(self, canvas, board):
+    def _draw_channel(self, canvas, board):
         # Draw cells
         for x, col in enumerate(board):
             for y, cell in enumerate(col):
@@ -301,32 +303,13 @@ class Renderer:
                 x2 = self.tile_width * x + self.tile_width
                 y2 = self.tile_height * y + self.tile_height
 
-                value = (cell[CHANNEL_PERCEPTION] / 16) if cell[CHANNEL_PERCEPTION] > 0 else 0
-                value = 255 - math.floor(value * 255)
+                value = 255 - math.floor(cell * 255)
                 hex_value = value.to_bytes(1, 'big').hex()
                 canvas.create_rectangle(x1, y1, x2, y2, fill='#{0}{0}{0}'.format(hex_value))
                 canvas.create_text(x1 + (x2 - x1) / 2, y1 + (y2 - y1) / 2,
                                    fill='red',
                                    font=self.font,
-                                   text='{:.0f}'.format(cell[CHANNEL_PERCEPTION]))
-
-    def _draw_spy_perception(self, canvas, board):
-        # Draw cells
-        for x, col in enumerate(board):
-            for y, cell in enumerate(col):
-                x1 = self.tile_width * x
-                y1 = self.tile_height * y
-                x2 = self.tile_width * x + self.tile_width
-                y2 = self.tile_height * y + self.tile_height
-
-                value = (cell[CHANNEL_SPY_PERCEPTION] / 1) if cell[CHANNEL_SPY_PERCEPTION] > 0 else 0
-                value = 255 - math.floor(value * 255)
-                hex_value = value.to_bytes(1, 'big').hex()
-                canvas.create_rectangle(x1, y1, x2, y2, fill='#{0}{0}{0}'.format(hex_value))
-                canvas.create_text(x1 + (x2 - x1) / 2, y1 + (y2 - y1) / 2,
-                                   fill='red',
-                                   font=self.font,
-                                   text='{:.1f}'.format(cell[CHANNEL_SPY_PERCEPTION]))
+                                   text='{:.1f}'.format(cell))
 
     def _draw_info_board(self, canvas, game):
 
