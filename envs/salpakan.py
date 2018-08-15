@@ -1,11 +1,14 @@
 from gym import Env, spaces
 import numpy as np
 from .salpakan_game import SalpakanGame, Renderer, \
-    MOVE_NORMAL, MOVE_CAPTURE, MOVE_CAPTURE_LOSE, MOVE_WIN, MOVE_PASS, MOVE_INVALID
+    MOVE_NORMAL, MOVE_CAPTURE, MOVE_CAPTURE_LOSE, MOVE_WIN, MOVE_PASS, MOVE_INVALID, TROOP_SPY
 
 OBSERVATION_SHAPE = (9, 8, 3)
 MAX_STEPS = 200
 
+
+def _spy_only(item):
+    return 1 if item == TROOP_SPY else 0
 
 class SalpakanEnv(Env):
 
@@ -74,7 +77,8 @@ class SalpakanEnv(Env):
         # my units, clip troops channel
         observation[:, :, 1] = my_troops / 16
         # my spy
-        observation[:, :, 2] = np.clip(my_troops - 1, 0, 1)
+        v_spy_func = np.vectorize(_spy_only)
+        observation[:, :, 2] = v_spy_func(my_troops)
 
         return observation
 
