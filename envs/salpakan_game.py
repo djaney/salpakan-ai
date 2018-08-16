@@ -309,7 +309,7 @@ class Renderer:
                 canvas.create_text(x1 + (x2 - x1) / 2, y1 + (y2 - y1) / 2,
                                    fill='red',
                                    font=self.font,
-                                   text='{:.1f}'.format(cell))
+                                   text='{:.2f}'.format(cell))
 
     def _draw_info_board(self, canvas, game):
 

@@ -12,10 +12,7 @@ def _spy_only(item):
 
 
 def _troop_normalize_state(troop, class_num):
-    if troop == 0:
-        return 0
-    else:
-        return (troop/class_num) * 0.5 + 0.5
+    return troop / class_num
 
 
 class SalpakanEnv(Env):
