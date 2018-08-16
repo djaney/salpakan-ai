@@ -204,7 +204,10 @@ def train():
         inp = crop_input(inp)
         model.fit(inp, [q_value], verbose=0)
         q_history.append(q_value)
-    wins.append(1 if env.game.winner == 0 else 0)
+        if env.game.winner == 0:
+            wins.append(1)
+        elif env.game.winner == 1:
+            wins.append(0)
     print('Max: {:.4f} Min: {:.4f} Mean: {:.4f}, Win: {}, WL: {:.4f}'
           .format(np.max(q_history), np.min(q_history), np.mean(q_history), env.game.winner, np.mean(wins)))
 
