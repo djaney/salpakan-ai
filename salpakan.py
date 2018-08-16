@@ -46,7 +46,8 @@ if os.path.isfile(WEIGHTS_PATH) and os.access(WEIGHTS_PATH, os.R_OK):
     model.load_weights(WEIGHTS_PATH)
 
 memory = deque(maxlen=MEMORY)
-
+wins = deque(maxlen=10)
+env = gym.make(ENV_NAME)
 
 def get_action(ob, training=True):
     moves = env.possible_moves()
@@ -203,12 +204,12 @@ def train():
         inp = crop_input(inp)
         model.fit(inp, [q_value], verbose=0)
         q_history.append(q_value)
-
-    print('Max: {} Min: {} Mean: {}, Win: {}'.format(np.max(q_history), np.min(q_history), np.mean(q_history), env.game.winner))
+    wins.append(1 if env.game.winner == 0 else 0)
+    print('Max: {:.4f} Min: {:.4f} Mean: {:.4f}, Win: {}, WL: {:.4f}'
+          .format(np.max(q_history), np.min(q_history), np.mean(q_history), env.game.winner, np.mean(wins)))
 
 
 # train
-env = gym.make(ENV_NAME)
 while True:
 
     ob = env.reset()
