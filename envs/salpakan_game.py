@@ -101,12 +101,13 @@ class SalpakanGame:
         :return:
         """
         player = self.turn
-
+        me = 0
+        him = 0
         if move != 0:
             x, y, _x, _y = move
 
             if not self._is_valid_move(player, (x, y), (_x, _y)):
-                return MOVE_INVALID
+                return MOVE_INVALID, me, him
 
             move_type = self._get_move_type(player, (x, y), (_x, _y))
 
@@ -160,7 +161,7 @@ class SalpakanGame:
         self.turn = PLAYER_2 if self.turn == PLAYER_1 else PLAYER_1
 
         # return move type
-        return move_type
+        return move_type, abs(me), abs(him)
 
     def get_board(self):
         return _normalize_board(self.turn, self.board)

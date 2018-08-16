@@ -29,25 +29,20 @@ class SalpakanEnv(Env):
         self.done = False
 
     def step(self, action):
-        move_type = self.game.move(action)
+        move_type, me, him = self.game.move(action)
         ob = self._get_state()
         done = self.game.winner is not None or self.steps > MAX_STEPS
         self.done = self.done or done
         self.steps += 1
 
         if move_type == MOVE_NORMAL:
-            reward = 1
-        elif move_type == MOVE_CAPTURE:
-            reward = 3
-        elif move_type == MOVE_CAPTURE_LOSE:
-            reward = -3
-        elif move_type == MOVE_WIN:
-            reward = 10
-        elif move_type == MOVE_PASS:
             reward = 0
-        elif move_type == MOVE_INVALID:
-            reward = -10
-            # self.done = self.done or True
+        elif move_type == MOVE_CAPTURE:
+            reward = him
+        elif move_type == MOVE_CAPTURE_LOSE:
+            reward = 0  # do not punish
+        elif move_type == MOVE_WIN:
+            reward = 100
         else:
             reward = 0
 
