@@ -51,6 +51,9 @@ memory = deque(maxlen=MEMORY)
 def get_action(ob, training=True):
     moves = env.possible_moves()
 
+    if len(moves) == 0:
+        return None
+
     if training and random.uniform(0, 1) < EXPLORE_RATE:
         action = random.choice(moves)
     else:
