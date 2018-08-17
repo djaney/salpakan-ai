@@ -261,7 +261,7 @@ class Renderer:
         self.view.update_idletasks()
 
     def _create_canvas(self, parent, grid):
-        canvas = tk.Canvas(parent, width=self.width, height=self.height, bg='white')
+        canvas = tk.Canvas(parent, width=self.width, height=self.height, bg='white', bd=0, highlightthickness=0)
         canvas.grid(row=grid[0], column=grid[1])
         return canvas
 
