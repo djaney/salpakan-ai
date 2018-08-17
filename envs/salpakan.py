@@ -40,7 +40,7 @@ class SalpakanEnv(Env):
         elif move_type == MOVE_CAPTURE:
             reward = him
         elif move_type == MOVE_CAPTURE_LOSE:
-            reward = 0  # do not punish
+            reward = 0.5  # reward for trying
         elif move_type == MOVE_WIN:
             reward = 100
         else:
