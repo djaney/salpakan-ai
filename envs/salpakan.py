@@ -1,14 +1,14 @@
 from gym import Env, spaces
 import numpy as np
 from .salpakan_game import SalpakanGame, Renderer, \
-    MOVE_NORMAL, MOVE_CAPTURE, MOVE_CAPTURE_LOSE, MOVE_WIN, MOVE_PASS, MOVE_INVALID, TROOP_SPY
+    MOVE_NORMAL, MOVE_CAPTURE, MOVE_CAPTURE_LOSE, MOVE_WIN, MOVE_PASS, MOVE_INVALID, TROOP_SPY, TROOP_FLAG, TROOP_PRIVATE
 
-OBSERVATION_SHAPE = (9, 8, 3)
+OBSERVATION_SHAPE = (9, 8, 5)
 MAX_STEPS = 200
 
 
-def _spy_only(item):
-    return 1 if item == TROOP_SPY else 0
+def _troop_only(item, troop):
+    return 1 if item == troop else 0
 
 
 def _troop_normalize_state(troop, class_num):
@@ -73,14 +73,16 @@ class SalpakanEnv(Env):
         enemy_troops = np.clip(board[:, :, 0] * -1, 0, None)
 
         v_troop_adjust = np.vectorize(_troop_normalize_state)
+        v_troop_only = np.vectorize(_troop_only)
 
-        # enemy perception, flip and clip, troops channel
-        observation[:, :, 0] = v_troop_adjust(np.clip(enemy_troops, 0, 1) * board[:, :, 1], 16)
-        # my units, clip troops channel
-        observation[:, :, 1] = v_troop_adjust(my_troops, 16)
-        # my spy
-        v_spy_func = np.vectorize(_spy_only)
-        observation[:, :, 2] = v_spy_func(my_troops)
+        # my units
+        observation[:, :, 0] = v_troop_adjust(my_troops, 16)
+        # enemy perception
+        observation[:, :, 1] = v_troop_adjust(np.clip(enemy_troops, 0, 1) * board[:, :, 1], 16)
+        # my troops
+        observation[:, :, 2] = v_troop_only(my_troops, TROOP_SPY)
+        observation[:, :, 3] = v_troop_only(my_troops, TROOP_PRIVATE)
+        observation[:, :, 4] = v_troop_only(my_troops, TROOP_FLAG)
 
         return observation
 

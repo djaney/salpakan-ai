@@ -19,14 +19,12 @@ EXPLORE_RATE = 0.1
 
 
 def create_model():
-    state_input = Input(shape=(9, 8, 3))
+    state_input = Input(shape=(9, 8, 5))
     action_input = Input(shape=(4,))
 
-    conv_1 = Conv2D(12, 4)(state_input)
+    conv_1 = Conv2D(100, 2)(state_input)
     conv1_a = LeakyReLU()(conv_1)
-    conv_2 = Conv2D(24, 2)(conv1_a)
-    conv2_a = LeakyReLU()(conv_2)
-    flat_layer = Flatten()(conv2_a)
+    flat_layer = Flatten()(conv1_a)
     dense_1 = Dense(512)(flat_layer)
     state_output = LeakyReLU()(dense_1)
     merged_layer = concatenate([state_output, action_input])

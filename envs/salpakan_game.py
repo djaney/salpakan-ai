@@ -227,7 +227,7 @@ class Renderer:
         self.view = None
         self.canvas = None
 
-        window_width = self.width * 2
+        window_width = self.width * 3
         window_height = self.height * 2
 
         self.view = tk.Tk()
@@ -236,8 +236,10 @@ class Renderer:
 
         self.canvas = self._create_canvas(self.view, (0, 0))
         self.canvas2 = self._create_canvas(self.view, (0, 1))
-        self.canvas3 = self._create_canvas(self.view, (1, 0))
-        self.canvas4 = self._create_canvas(self.view, (1, 1))
+        self.canvas3 = self._create_canvas(self.view, (0, 2))
+        self.canvas4 = self._create_canvas(self.view, (1, 0))
+        self.canvas5 = self._create_canvas(self.view, (1, 1))
+        self.canvas6 = self._create_canvas(self.view, (1, 2))
 
     def render(self, game, state):
 
@@ -245,19 +247,12 @@ class Renderer:
         self._draw_board(self.canvas)
         self._draw_pieces(self.canvas, game.board)
 
+        state_canvas_list = [self.canvas2, self.canvas3, self.canvas4, self.canvas5, self.canvas6]
         if game.turn == 0:
-            self._clear(self.canvas2)
-            self._clear(self.canvas3)
-            self._clear(self.canvas4)
-
-            self._draw_board(self.canvas2)
-            self._draw_channel(self.canvas2, state[:, :, 0])
-
-            self._draw_board(self.canvas3)
-            self._draw_channel(self.canvas3, state[:, :, 1])
-
-            self._draw_board(self.canvas4)
-            self._draw_channel(self.canvas4, state[:, :, 2])
+            for i, canvas in enumerate(state_canvas_list):
+                self._clear(canvas)
+                self._draw_board(canvas)
+                self._draw_channel(canvas, state[:, :, i])
 
         self.view.update_idletasks()
 
