@@ -1,0 +1,1 @@
+- Manually calculate move value and add it to q value
