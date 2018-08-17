@@ -49,6 +49,7 @@ memory = deque(maxlen=MEMORY)
 wins = deque(maxlen=10)
 env = gym.make(ENV_NAME)
 
+
 def get_action(ob, training=True):
     moves = env.possible_moves()
 
@@ -129,14 +130,16 @@ def remember(ob, action, next_ob, reward):
 
 def crop_input(inp):
     board_state = inp[0]
-    x = np.argmax(inp[1])
-    y = np.argmax(inp[2])
-    _x = np.argmax(inp[3])
-    _y = np.argmax(inp[4])
-    width = 9
-    height = 8
-    shift_x = math.floor(width / 2) - x
-    shift_y = math.floor(height / 2) - y
+    x = np.argmax(inp[1][0])
+    y = np.argmax(inp[2][0])
+    _x = np.argmax(inp[3][0])
+    _y = np.argmax(inp[4][0])
+    width = 8
+    height = 7
+    center_x = math.floor(width / 2)
+    center_y = math.floor(height / 2)
+    shift_x = center_x - x
+    shift_y = center_y - y
 
     zero_pad = (0, 0)
 
