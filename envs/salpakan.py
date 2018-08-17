@@ -1,7 +1,7 @@
 from gym import Env, spaces
 import numpy as np
 from .salpakan_game import SalpakanGame, Renderer, \
-    MOVE_NORMAL, MOVE_CAPTURE, MOVE_CAPTURE_LOSE, MOVE_WIN, MOVE_PASS, MOVE_INVALID, TROOP_SPY, TROOP_FLAG, TROOP_PRIVATE
+    MOVE_NORMAL, MOVE_CAPTURE, MOVE_CAPTURE_LOSE, MOVE_WIN, MOVE_LOSE, TROOP_SPY, TROOP_FLAG, TROOP_PRIVATE
 
 OBSERVATION_SHAPE = (9, 8, 5)
 MAX_STEPS = 200
@@ -43,6 +43,8 @@ class SalpakanEnv(Env):
             reward = 0.5  # reward for trying
         elif move_type == MOVE_WIN:
             reward = 100
+        elif move_type == MOVE_LOSE:
+            reward = -100
         else:
             reward = 0
 

@@ -14,6 +14,7 @@ MOVE_CAPTURE_LOSE = 3
 MOVE_WIN = 4
 MOVE_PASS = 5
 MOVE_INVALID = 6
+MOVE_LOSE = 7
 
 CHANNEL_TROOPS = 0
 CHANNEL_PERCEPTION = 1
@@ -143,8 +144,11 @@ class SalpakanGame:
                     self.board[_x][_y][CHANNEL_PERCEPTION] = max(abs(self.board[x][y][CHANNEL_TROOPS]) + 1,
                                                                  self.board[_x][_y][CHANNEL_PERCEPTION])
                     self.board[x][y] = self.board[x][y] * 0
-
-                    move_type = MOVE_CAPTURE_LOSE
+                    if me == TROOP_FLAG:
+                        move_type = MOVE_LOSE
+                        self.winner = 1 if player == 0 else 0
+                    else:
+                        move_type = MOVE_CAPTURE_LOSE
                 else:
                     self.board[_x][_y][CHANNEL_PERCEPTION] = self.board[x][y][CHANNEL_TROOPS]
                     self.board[x][y] = self.board[x][y] * 0
