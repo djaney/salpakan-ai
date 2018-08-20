@@ -8,6 +8,7 @@ from keras.layers import Input, Conv2D, LeakyReLU, Flatten, Dense, concatenate
 from keras.models import Model
 from keras.utils import to_categorical
 from collections import deque
+import sys
 import envs
 
 ENV_NAME = 'Salpakan-v0'
@@ -214,6 +215,8 @@ def train():
           .format(np.max(q_history), np.min(q_history), np.mean(q_history), env.game.winner, np.mean(wins)))
 
 
+mode = sys.argv[1] if len(sys.argv) > 1 else ''
+
 # train
 while True:
 
@@ -236,7 +239,8 @@ while True:
         ob = next_ob
         reward = next_reward
 
-        env.render()
+        if mode != 'silent':
+            env.render()
 
         if done:
             break
