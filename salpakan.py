@@ -13,7 +13,7 @@ import envs
 
 ENV_NAME = 'Salpakan-v0'
 WEIGHTS_PATH = '.models/dqn_{}_weights.h5f'.format(ENV_NAME)
-MEMORY = 50000
+MEMORY = 1000
 GAMMA = 0.95
 SAMPLE_SIZE = 32
 EXPLORE_RATE = 0.5
