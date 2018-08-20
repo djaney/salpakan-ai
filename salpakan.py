@@ -82,6 +82,7 @@ def evaluate(observations, moves):
         inp = [observations, x1, y1, x2, y2]
         inp = crop_input(inp)
         prediction = model.predict(inp)[0][0]
+        # TODO add manual scoring to q value
         q_values.append(prediction)
 
     if len(q_values) == 0:
