@@ -29,29 +29,6 @@ TROOP_PRIVATE = 3
 TROOP_FIVE_STAR = 15
 
 
-def _parse_move(move):
-    direction = (move - SPECIAL_MOVES_N) % 4
-    square_id = math.floor((move - SPECIAL_MOVES_N) / 4)
-    x = square_id % HEIGHT
-    y = math.floor(square_id / WIDTH)
-
-    if direction == 0:
-        _x = x - 1
-        _y = y
-    elif direction == 1:
-        _x = x + 1
-        _y = y
-    elif direction == 2:
-        _x = x
-        _y = y - 1
-    elif direction == 3:
-        _x = x
-        _y = y + 1
-    else:
-        raise Exception("Invalid direction")
-    return square_id, x, y, _x, _y, direction
-
-
 def _normalize_board(player, board):
     n_board = np.copy(board)
     if player == 1:
@@ -135,7 +112,7 @@ class SalpakanGame:
                             self.board[x][y][CHANNEL_SPY_PERCEPTION] = 1
                         else:
                             self.board[_x][_y][CHANNEL_SPY_PERCEPTION] = max(self.board[_x][_y][CHANNEL_SPY_PERCEPTION],
-                                                                         me / 15)
+                                                                             me / 15)
 
                 if win > 0:  # win
                     self.board[_x][_y] = self.board[x][y]
