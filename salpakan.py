@@ -22,13 +22,11 @@ def create_model():
     state_input = Input(shape=(9, 8, 5))
     action_input = Input(shape=(4,))
 
-    conv_1 = Conv2D(100, 2)(state_input)
+    conv_1 = Conv2D(10, 3)(state_input)
     conv1_a = LeakyReLU()(conv_1)
     flat_layer = Flatten()(conv1_a)
-    dense_1 = Dense(512)(flat_layer)
-    state_output = LeakyReLU()(dense_1)
-    merged_layer = concatenate([state_output, action_input])
-    dense_2 = Dense(512)(merged_layer)
+    merged_layer = concatenate([flat_layer, action_input])
+    dense_2 = Dense(128)(merged_layer)
     dense_2_a = LeakyReLU()(dense_2)
     output = Dense(1)(dense_2_a)
 
@@ -138,6 +136,7 @@ def crop_input(inp):
     center_y = math.floor(height / 2)
     shift_x = center_x - x
     shift_y = center_y - y
+    # range = 3
 
     zero_pad = (0, 0)
 
@@ -170,6 +169,8 @@ def crop_input(inp):
         direction = 3
 
     direction = np.expand_dims(to_categorical(direction, num_classes=4), 0)
+
+    # shifted = shifted[:, center_x - range:center_x + range + 1, center_y - range:center_y + range + 1, :]
 
     new_inp = [shifted, direction]
 
