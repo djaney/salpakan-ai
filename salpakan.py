@@ -227,15 +227,14 @@ while True:
     while True:
         possible_moves = env.possible_moves()
         turn = env.get_turn()
-        a = get_action(ob, training=turn == 0)
+        a = get_action(ob)
 
         if a is None:
             break  # no more action
 
         next_ob, next_reward, done, info = env.step(a)
 
-        if turn == 0:
-            remember(ob, a, next_ob, reward)
+        remember(ob, a, next_ob, reward)
 
         ob = next_ob
         reward = next_reward
