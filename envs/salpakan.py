@@ -4,7 +4,7 @@ from .salpakan_game import SalpakanGame, Renderer, \
     MOVE_NORMAL, MOVE_CAPTURE, MOVE_CAPTURE_LOSE, MOVE_WIN, MOVE_LOSE, TROOP_SPY, TROOP_FLAG, TROOP_PRIVATE
 
 OBSERVATION_SHAPE = (9, 8, 5)
-MAX_STEPS = 200
+MAX_STEPS = 1000
 
 
 def _troop_only(item, troop):
