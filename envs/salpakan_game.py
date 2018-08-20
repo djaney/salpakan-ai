@@ -194,7 +194,10 @@ class SalpakanGame:
 class Renderer:
     def __init__(self):
 
-        self.font = "Arial 10 bold"
+        self.names = ['', 'Flg', 'Spy', 'Pvt', 'Sgt', '2lt', '1st', 'Cap', 'Maj', 'LtCol', 'Col', 'Gen1', 'Gen2',
+                      'Gen3', 'Gen4', 'Gen5']
+
+        self.font = "Arial 8 bold"
 
         self.width = 281
         self.height = 250
@@ -255,6 +258,11 @@ class Renderer:
         for i in range(self.y_tiles):
             canvas.create_line(0, self.tile_height * i, self.width, self.tile_height * i)
 
+    def _num_to_piece(self, num):
+        num = int(num)
+        num = abs(num)
+        return self.names[num]
+
     def _draw_pieces(self, canvas, board):
         # Draw cells
         for x, col in enumerate(board):
@@ -269,7 +277,7 @@ class Renderer:
                     canvas.create_text(x1 + (x2 - x1) / 2, y1 + (y2 - y1) / 2,
                                        fill='white',
                                        font=self.font,
-                                       text=str(int(cell[0])))
+                                       text=self._num_to_piece(cell[0]))
 
     def _draw_channel(self, canvas, board):
         # Draw cells
