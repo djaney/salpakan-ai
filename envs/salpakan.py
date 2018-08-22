@@ -11,6 +11,11 @@ def _troop_only(item, troop):
     return 1 if item == troop else 0
 
 
+def _troop_except(troop, class_num):
+    exceptions = TROOP_SPY, TROOP_PRIVATE, TROOP_FLAG
+    return troop / class_num if troop not in exceptions else 0
+
+
 def _troop_normalize_state(troop, class_num):
     return troop / class_num
 
@@ -76,9 +81,10 @@ class SalpakanEnv(Env):
 
         v_troop_adjust = np.vectorize(_troop_normalize_state)
         v_troop_only = np.vectorize(_troop_only)
+        v_troop_except = np.vectorize(_troop_except)
 
         # my units
-        observation[:, :, 0] = v_troop_adjust(my_troops, 16)
+        observation[:, :, 0] = v_troop_except(my_troops, 16)
         # enemy perception
         observation[:, :, 1] = v_troop_adjust(np.clip(enemy_troops, 0, 1) * board[:, :, 1], 16)
         # my troops
