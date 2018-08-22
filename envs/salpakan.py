@@ -41,7 +41,7 @@ class SalpakanEnv(Env):
         self.steps += 1
 
         if move_type == MOVE_NORMAL:
-            reward = 0
+            reward = -10
         elif move_type == MOVE_CAPTURE:
             reward = him
         elif move_type == MOVE_CAPTURE_LOSE:

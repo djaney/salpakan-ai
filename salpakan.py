@@ -185,6 +185,7 @@ def train():
 
     sample_moves = random.sample(memory, SAMPLE_SIZE)
     q_history = []
+    loss_history = []
     for move in sample_moves:
         ob, a, next_ob, reward = move
         # next q is enemy's best move minus your reward
@@ -206,14 +207,15 @@ def train():
 
         inp = [ob, x1, y1, x2, y2]
         inp = crop_input(inp)
-        model.fit(inp, [q_value], verbose=0)
+        result = model.fit(inp, [q_value], verbose=0)
         q_history.append(q_value)
+        loss_history.append(result.history.get('loss', [])[-1])
     if env.game.winner == 0:
         wins.append(1)
     elif env.game.winner == 1:
         wins.append(0)
-    print('Max: {:.4f} Min: {:.4f} Mean: {:.4f}, Win: {}, WL: {:.4f}'
-          .format(np.max(q_history), np.min(q_history), np.mean(q_history), env.game.winner, np.mean(wins)))
+    print('Max: {:.4f} Min: {:.4f} Mean: {:.4f}, Win: {}, loss: {:.4f}'
+          .format(np.max(q_history), np.min(q_history), np.mean(q_history), env.game.winner, np.mean(loss_history)))
 
 
 mode = sys.argv[1] if len(sys.argv) > 1 else ''
